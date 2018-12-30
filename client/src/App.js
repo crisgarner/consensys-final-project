@@ -1,9 +1,11 @@
+import React, { Component } from "react";
+import ProfileForm from "./profiles/ProfileForm";
+
 class App extends Component {
   state = { loading: true, drizzleState: null };
 
   componentDidMount() {
     const { drizzle } = this.props;
-
     // subscribe to changes in the store
     this.unsubscribe = drizzle.store.subscribe(() => {
       // every time the store updates, grab the state from drizzle
@@ -21,7 +23,9 @@ class App extends Component {
   }
 
   render() {
-    if (this.state.loading) return "Loading Drizzle...";
-    return <div className="App">Drizzle is ready</div>;
+    if (this.state.loading) return "Loading Application...";
+    return <ProfileForm />;
   }
 }
+
+export default App;
