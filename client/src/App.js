@@ -1,5 +1,6 @@
 import React, { Component } from "react";
 import ProfileForm from "./profiles/ProfileForm";
+import Header from "./profiles/Header";
 
 class App extends Component {
   state = { loading: true, drizzleState: null };
@@ -24,7 +25,18 @@ class App extends Component {
 
   render() {
     if (this.state.loading) return "Loading Application...";
-    return <ProfileForm />;
+    return (
+      <>
+        <Header
+          drizzle={this.props.drizzle}
+          drizzleState={this.state.drizzleState}
+        />
+        <ProfileForm
+          drizzle={this.props.drizzle}
+          drizzleState={this.state.drizzleState}
+        />
+      </>
+    );
   }
 }
 

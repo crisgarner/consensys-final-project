@@ -13,12 +13,14 @@ import {
 class ProfileForm extends Component {
   constructor(props) {
     super(props);
+    const { drizzle, drizzleState } = this.props;
     this.state = {
       name: "",
       sex: "Female",
       age: "",
       email: "",
-      bio: ""
+      bio: "",
+      account: drizzleState.accounts[0]
     };
     this.onChangeName = this.onChangeName.bind(this);
     this.onChangeSex = this.onChangeSex.bind(this);

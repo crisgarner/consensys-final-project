@@ -6,6 +6,7 @@
     "bootstrap": "^4.2.1",
     "drizzle": "^1.2.4",
     "react": "^16.7.0",
+    "react-blockies": "^1.4.0",
     "react-dom": "^16.7.0",
     "react-scripts": "2.1.1",
     "reactstrap": "6.5.0",
