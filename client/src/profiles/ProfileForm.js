@@ -7,7 +7,11 @@ import {
   FormGroup,
   Label,
   Input,
-  Button
+  Button,
+  Modal,
+  ModalHeader,
+  ModalBody,
+  ModalFooter
 } from "reactstrap";
 
 class ProfileForm extends Component {
@@ -20,7 +24,9 @@ class ProfileForm extends Component {
       age: "",
       email: "",
       bio: "",
-      account: drizzleState.accounts[0]
+      account: drizzleState.accounts[0],
+      modal: false,
+      transactionHash: ""
     };
     this.onChangeName = this.onChangeName.bind(this);
     this.onChangeSex = this.onChangeSex.bind(this);
@@ -28,6 +34,13 @@ class ProfileForm extends Component {
     this.onChangeEmail = this.onChangeEmail.bind(this);
     this.onChangeBio = this.onChangeBio.bind(this);
     this.onSubmitForm = this.onSubmitForm.bind(this);
+    this.toggle = this.toggle.bind(this);
+  }
+
+  toggle() {
+    this.setState({
+      modal: !this.state.modal
+    });
   }
 
   onChangeName(event) {
@@ -50,72 +63,128 @@ class ProfileForm extends Component {
     this.setState({ bio: event.target.value });
   }
 
-  onSubmitForm(event) {
+  componentDidMount() {
+    const { drizzle } = this.props;
+    // subscribe to changes in the store
+    this.unsubscribe = drizzle.store.subscribe(() => {
+      // every time the store updates, grab the state from drizzle
+      const drizzleState = drizzle.store.getState();
+
+      // check to see if it's ready, if so, update local component state
+      if (drizzleState.drizzleStatus.initialized) {
+        if (drizzleState.transactionStack[this.state.transactionId]) {
+          console.log("inside job");
+          const transactionHash =
+            drizzleState.transactionStack[this.state.transactionId];
+          this.setState({
+            transactionHash: transactionHash,
+            modal: true,
+            name: "",
+            sex: "Female",
+            age: "",
+            email: "",
+            bio: ""
+          });
+        }
+      }
+    });
+  }
+
+  componentWillUnmount() {
+    this.unsubscribe();
+  }
+
+  async onSubmitForm(event) {
     event.preventDefault();
+    const toBytes32 = this.props.drizzle.web3.utils.utf8ToHex;
+    const stackId = await this.props.drizzle.contracts.Profiles.methods.createProfile.cacheSend(
+      toBytes32(this.state.name),
+      toBytes32(this.state.sex),
+      this.state.age,
+      this.state.bio,
+      { from: this.props.drizzleState.account }
+    );
+    this.setState({ transactionId: stackId });
   }
 
   render() {
     return (
-      <Container className="mt-4 ">
-        <Row className="justify-content-center mt-4">
-          <Col lg="6 mt-4">
-            <h2>Create Profile</h2>
-            <Form className="form" onSubmit={this.onSubmitForm}>
-              <FormGroup>
-                <Label>Full Name</Label>
-                <Input
-                  name="name"
-                  value={this.state.name}
-                  onChange={this.onChangeName}
-                />
-              </FormGroup>
-              <FormGroup>
-                <Label for="sex">Select</Label>
-                <Input
-                  type="select"
-                  name="select"
-                  id="sex"
-                  value={this.state.sex}
-                  onChange={this.onChangeSex}
-                >
-                  <option value="Female">Female</option>
-                  <option value="Male">Male</option>
-                </Input>
-              </FormGroup>
-              <FormGroup>
-                <Label>Age</Label>
-                <Input
-                  type="number"
-                  name="age"
-                  value={this.state.age}
-                  onChange={this.onChangeAge}
-                />
-              </FormGroup>
-              <FormGroup>
-                <Label>Email</Label>
-                <Input
-                  type="email"
-                  name="email"
-                  placeholder="email@email.com"
-                  value={this.state.email}
-                  onChange={this.onChangeEmail}
-                />
-              </FormGroup>
-              <FormGroup>
-                <Label for="exampleText">Bio</Label>
-                <Input
-                  type="textarea"
-                  name="text"
-                  id="exampleText"
-                  value={this.state.bio}
-                  onChange={this.onChangeBio}
-                />
-              </FormGroup>
-              <Button color="primary">Create Profile</Button>
-            </Form>
-          </Col>
-        </Row>
-      </Container>
+      <>
+        <Modal
+          isOpen={this.state.modal}
+          toggle={this.toggle}
+          className={this.props.className}
+          size="lg"
+        >
+          <ModalHeader toggle={this.toggle}>Transaction Confirmed!</ModalHeader>
+          <ModalBody>Transaction Hash: {this.state.transactionHash}</ModalBody>
+          <ModalFooter>
+            <Button color="danger" onClick={this.toggle}>
+              Close
+            </Button>{" "}
+          </ModalFooter>
+        </Modal>
+        <Container className="mt-4 ">
+          <Row className="justify-content-center mt-4">
+            <Col lg="6 mt-4">
+              <h2>Create Profile</h2>
+              <Form className="form" onSubmit={this.onSubmitForm}>
+                <FormGroup>
+                  <Label>Full Name</Label>
+                  <Input
+                    name="name"
+                    value={this.state.name}
+                    onChange={this.onChangeName}
+                  />
+                </FormGroup>
+                <FormGroup>
+                  <Label for="sex">Select</Label>
+                  <Input
+                    type="select"
+                    name="select"
+                    id="sex"
+                    value={this.state.sex}
+                    onChange={this.onChangeSex}
+                  >
+                    <option value="Female">Female</option>
+                    <option value="Male">Male</option>
+                  </Input>
+                </FormGroup>
+                <FormGroup>
+                  <Label>Age</Label>
+                  <Input
+                    type="number"
+                    name="age"
+                    value={this.state.age}
+                    onChange={this.onChangeAge}
+                  />
+                </FormGroup>
+                <FormGroup>
+                  <Label>Email</Label>
+                  <Input
+                    type="email"
+                    name="email"
+                    placeholder="email@email.com"
+                    value={this.state.email}
+                    onChange={this.onChangeEmail}
+                  />
+                </FormGroup>
+                <FormGroup>
+                  <Label for="exampleText">Bio</Label>
+                  <Input
+                    type="textarea"
+                    name="text"
+                    id="exampleText"
+                    value={this.state.bio}
+                    onChange={this.onChangeBio}
+                  />
+                </FormGroup>
+                <Button color="primary">Create Profile</Button>
+              </Form>
+            </Col>
+          </Row>
+        </Container>
+      </>
     );
   }
 }
