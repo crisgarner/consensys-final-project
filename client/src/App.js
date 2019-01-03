@@ -1,6 +1,7 @@
 import React, { Component } from "react";
 import ProfileForm from "./profiles/ProfileForm";
 import Header from "./profiles/Header";
+import "./App.css";
 
 class App extends Component {
   state = { loading: true, drizzleState: null };
