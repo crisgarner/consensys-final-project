@@ -22,7 +22,7 @@ class ProfileForm extends Component {
       name: "",
       sex: "Female",
       age: "",
-      email: "",
+
       bio: "",
       account: drizzleState.accounts[0],
       modal: false,
@@ -31,7 +31,7 @@ class ProfileForm extends Component {
     this.onChangeName = this.onChangeName.bind(this);
     this.onChangeSex = this.onChangeSex.bind(this);
     this.onChangeAge = this.onChangeAge.bind(this);
-    this.onChangeEmail = this.onChangeEmail.bind(this);
+
     this.onChangeBio = this.onChangeBio.bind(this);
     this.onSubmitForm = this.onSubmitForm.bind(this);
     this.toggle = this.toggle.bind(this);
@@ -53,10 +53,6 @@ class ProfileForm extends Component {
 
   onChangeAge(event) {
     this.setState({ age: event.target.value });
-  }
-
-  onChangeEmail(event) {
-    this.setState({ email: event.target.value });
   }
 
   onChangeBio(event) {
@@ -82,7 +78,6 @@ class ProfileForm extends Component {
             name: "",
             sex: "Female",
             age: "",
-            email: "",
             bio: ""
           });
         }
@@ -157,16 +152,6 @@ class ProfileForm extends Component {
                     name="age"
                     value={this.state.age}
                     onChange={this.onChangeAge}
-                  />
-                </FormGroup>
-                <FormGroup>
-                  <Label>Email</Label>
-                  <Input
-                    type="email"
-                    name="email"
-                    placeholder="email@email.com"
-                    value={this.state.email}
-                    onChange={this.onChangeEmail}
                   />
                 </FormGroup>
                 <FormGroup>
