@@ -15,6 +15,7 @@ contract("Profiles", accounts => {
       web3.utils.utf8ToHex("Male"),
       28,
       "Building the Coffee Economy on the Blockchain @ Affogato Network.",
+      "QmVtYjNij3KeyGmcgg7yVXWskLaBtov3UYL9pgcGK3MCWu",
       { from: accounts[1] }
     );
     receipt.logs.length.should.equal(1, "trigger one event");
@@ -42,6 +43,11 @@ contract("Profiles", accounts => {
       "should equal to inserted"
     );
 
+    receipt.logs[0].args._imageHash.should.equal(
+      "QmVtYjNij3KeyGmcgg7yVXWskLaBtov3UYL9pgcGK3MCWu",
+      "should equal to inserted"
+    );
+
     var revert = false;
     try {
       await this.instance.createProfile(
@@ -49,6 +55,7 @@ contract("Profiles", accounts => {
         web3.utils.utf8ToHex("Male"),
         30,
         "Building the Coffee Economy on the Blockchain @ Affogato Network.",
+        "QmVtYjNij3KeyGmcgg7yVXWskLaBtov3UYL9pgcGK3MCWu",
         { from: accounts[1] }
       );
     } catch (err) {
@@ -69,6 +76,9 @@ contract("Profiles", accounts => {
     profile.bio.should.be.equal(
       "Building the Coffee Economy on the Blockchain @ Affogato Network."
     );
+    profile.imageHash.should.be.equal(
+      "QmVtYjNij3KeyGmcgg7yVXWskLaBtov3UYL9pgcGK3MCWu"
+    );
   });
 
   it("...should update an user profile.", async () => {
@@ -77,6 +87,7 @@ contract("Profiles", accounts => {
       web3.utils.utf8ToHex("Male"),
       32,
       "Building the Coffee Economy on the Blockchain @ Affogato Network.",
+      "QmVtYjNij3KeyGmcgg7yVXWskLaBtov3UYL9pgcGK3MCWu",
       { from: accounts[1] }
     );
     receipt.logs.length.should.equal(1, "trigger one event");
@@ -111,6 +122,7 @@ contract("Profiles", accounts => {
         web3.utils.utf8ToHex("Male"),
         40,
         "Building the Coffee Economy on the Blockchain @ Affogato Network.",
+        "QmVtYjNij3KeyGmcgg7yVXWskLaBtov3UYL9pgcGK3MCWu",
         { from: accounts[5] }
       );
     } catch (err) {
