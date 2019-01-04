@@ -13,6 +13,7 @@ import {
   ModalBody,
   ModalFooter
 } from "reactstrap";
+import ipfs from "../scripts/ipfs";
 
 class ProfileForm extends Component {
   constructor(props) {
@@ -22,16 +23,17 @@ class ProfileForm extends Component {
       name: "",
       sex: "Female",
       age: "",
-
       bio: "",
+      imageHash: "",
       account: drizzleState.accounts[0],
       modal: false,
-      transactionHash: ""
+      transactionHash: "",
+      buffer: "",
+      fileText: "Select Profile Image"
     };
     this.onChangeName = this.onChangeName.bind(this);
     this.onChangeSex = this.onChangeSex.bind(this);
     this.onChangeAge = this.onChangeAge.bind(this);
-
     this.onChangeBio = this.onChangeBio.bind(this);
     this.onSubmitForm = this.onSubmitForm.bind(this);
     this.toggle = this.toggle.bind(this);
@@ -59,6 +61,34 @@ class ProfileForm extends Component {
     this.setState({ bio: event.target.value });
   }
 
+  onChangeImage(event) {
+    this.setState({ imageHash: event.target.value });
+  }
+
+  //Take file input from user
+  //TODO: restrict only images
+  captureFile = event => {
+    event.stopPropagation();
+    event.preventDefault();
+    var fileText = "Select Profile Image";
+    if (event.target.files[0] != null) {
+      fileText = event.target.files[0].name;
+    }
+    const file = event.target.files[0];
+    let reader = new window.FileReader();
+    reader.readAsArrayBuffer(file);
+    reader.onloadend = () => this.convertToBuffer(reader, fileText);
+  };
+
+  //Convert the file to buffer to store on IPFS
+  convertToBuffer = async (reader, fileText) => {
+    //file is converted to a buffer for upload to IPFS
+    this.setState({ fileText });
+    const buffer = await Buffer.from(reader.result);
+    //set this buffer-using es6 syntax
+    this.setState({ buffer });
+  };
+
   componentDidMount() {
     const { drizzle } = this.props;
     // subscribe to changes in the store
@@ -78,7 +108,8 @@ class ProfileForm extends Component {
             name: "",
             sex: "Female",
             age: "",
-            bio: ""
+            bio: "",
+            imageHash: ""
           });
         }
       }
@@ -91,15 +122,19 @@ class ProfileForm extends Component {
 
   async onSubmitForm(event) {
     event.preventDefault();
-    const toBytes32 = this.props.drizzle.web3.utils.utf8ToHex;
-    const stackId = await this.props.drizzle.contracts.Profiles.methods.createProfile.cacheSend(
-      toBytes32(this.state.name),
-      toBytes32(this.state.sex),
-      this.state.age,
-      this.state.bio,
-      { from: this.props.drizzleState.account }
-    );
-    this.setState({ transactionId: stackId });
+    await ipfs.add(this.state.buffer, async (err, ipfsHash) => {
+      this.setState({ imageHash: ipfsHash[0].hash });
+      const toBytes32 = this.props.drizzle.web3.utils.utf8ToHex;
+      const stackId = await this.props.drizzle.contracts.Profiles.methods.createProfile.cacheSend(
+        toBytes32(this.state.name),
+        toBytes32(this.state.sex),
+        this.state.age,
+        this.state.bio,
+        this.state.imageHash,
+        { from: this.props.drizzleState.account }
+      );
+      this.setState({ transactionId: stackId });
+    });
   }
 
   render() {
@@ -131,6 +166,18 @@ class ProfileForm extends Component {
                     value={this.state.name}
                     onChange={this.onChangeName}
                   />
+                </FormGroup>
+                <FormGroup>
+                  <Input
+                    type="file"
+                    className="custom-file-input"
+                    onChange={this.captureFile}
+                    id="customFile"
+                  />
+
+                  <label className="custom-file-label" htmlFor="customFile">
+                    {this.state.fileText}
+                  </label>
                 </FormGroup>
                 <FormGroup>
                   <Label for="sex">Select</Label>
