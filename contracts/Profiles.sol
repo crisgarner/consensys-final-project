@@ -20,6 +20,11 @@ contract Profiles {
         string _imageHash
     );
 
+    event LogToogleContractActive(
+        bool _stopped
+    );
+
+
     struct Profile {
         address owner;
         bytes32 name;
@@ -29,12 +34,28 @@ contract Profiles {
         string imageHash;
     }
 
+    bool private stopped = false;
     address public owner;
     mapping(address => Profile) public addressToProfile;
     address[] profilesArray;
 
     constructor(address _owner) public {
         owner = _owner;
+    }
+
+    modifier isAdmin() {
+        require(msg.sender == owner, "Only owner");
+        _;
+    }
+
+    modifier stopInEmergency { 
+        require(!stopped, "Contract is stopped");
+         _;
+    }
+
+    function toggleContractActive() isAdmin public {
+        stopped = !stopped;
+        emit LogToogleContractActive(stopped);
     }
 
     function getCurrentProfilesSize() public view returns(uint){
@@ -47,7 +68,7 @@ contract Profiles {
         uint32 _age,
         string memory _bio,
         string memory _imageHash
-    ) public {
+    ) public stopInEmergency {
         require(addressToProfile[msg.sender].owner == address(0), "User already has an account");
         Profile memory profile = Profile(msg.sender, _name, _sex, _age, _bio,_imageHash);
         addressToProfile[msg.sender] = profile;
@@ -61,7 +82,7 @@ contract Profiles {
         uint32 _age,
         string memory _bio,
         string memory _imageHash
-    ) public {
+    ) public stopInEmergency{
         require(addressToProfile[msg.sender].owner != address(0), "User do not has an account");
         Profile memory profile = Profile(msg.sender, _name, _sex, _age, _bio, _imageHash);
         addressToProfile[msg.sender] = profile;
