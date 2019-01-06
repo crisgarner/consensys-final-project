@@ -6,7 +6,7 @@ const Profiles = artifacts.require("./Profiles.sol");
 
 contract("Profiles", accounts => {
   beforeEach(async () => {
-    this.instance = await Profiles.deployed();
+    this.instance = await Profiles.deployed(accounts[0]);
   });
 
   it("...should create an user profile.", async () => {
@@ -135,5 +135,10 @@ contract("Profiles", accounts => {
       true,
       "Should revert on non existing profile update"
     );
+  });
+
+  it("...should set an owner.", async () => {
+    var owner = await this.instance.owner();
+    owner.should.be.equal(accounts[0]);
   });
 });

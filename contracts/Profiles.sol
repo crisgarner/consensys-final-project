@@ -29,8 +29,13 @@ contract Profiles {
         string imageHash;
     }
 
+    address public owner;
     mapping(address => Profile) public addressToProfile;
     address[] profilesArray;
+
+    constructor(address _owner) public {
+        owner = _owner;
+    }
 
     function getCurrentProfilesSize() public view returns(uint){
         return profilesArray.length;
