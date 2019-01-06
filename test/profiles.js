@@ -141,4 +141,71 @@ contract("Profiles", accounts => {
     var owner = await this.instance.owner();
     owner.should.be.equal(accounts[0]);
   });
+
+  it("...should toogle circuit breaker.", async () => {
+    var receipt = await this.instance.toggleContractActive({
+      from: accounts[0]
+    });
+    receipt.logs.length.should.equal(1, "trigger one event");
+    receipt.logs[0].event.should.equal(
+      "LogToogleContractActive",
+      "should be the LogToogleContractActive event"
+    );
+    receipt.logs[0].args._stopped.should.equal(true, "should equal to true");
+    var revert = false;
+    try {
+      await this.instance.toggleContractActive({
+        from: accounts[1]
+      });
+    } catch (err) {
+      revert = true;
+      assert(err.reason === "Only owner");
+    }
+    expect(revert).to.equal(true, "Should revert on no permissions");
+    var receipt = await this.instance.toggleContractActive({
+      from: accounts[0]
+    });
+    receipt.logs.length.should.equal(1, "trigger one event");
+    receipt.logs[0].event.should.equal(
+      "LogToogleContractActive",
+      "should be the LogToogleContractActive event"
+    );
+    receipt.logs[0].args._stopped.should.equal(false, "should equal to false");
+  });
+
+  it("...should stop on emergency circuit breaker.", async () => {
+    await this.instance.toggleContractActive({
+      from: accounts[0]
+    });
+    var revert = false;
+    try {
+      await this.instance.createProfile(
+        web3.utils.utf8ToHex("Eduardo Espinoza"),
+        web3.utils.utf8ToHex("Male"),
+        30,
+        "Building the Coffee Economy on the Blockchain @ Affogato Network.",
+        "QmVtYjNij3KeyGmcgg7yVXWskLaBtov3UYL9pgcGK3MCWu",
+        { from: accounts[3] }
+      );
+    } catch (err) {
+      revert = true;
+      assert(err.reason === "Contract is stopped");
+    }
+    expect(revert).to.equal(true, "Should revert on stopped contract");
+    revert = false;
+    try {
+      await this.instance.updateProfile(
+        web3.utils.utf8ToHex("Eduardo Garner"),
+        web3.utils.utf8ToHex("Male"),
+        40,
+        "Building the Coffee Economy on the Blockchain @ Affogato Network.",
+        "QmVtYjNij3KeyGmcgg7yVXWskLaBtov3UYL9pgcGK3MCWu",
+        { from: accounts[1] }
+      );
+    } catch (err) {
+      revert = true;
+      assert(err.reason === "Contract is stopped");
+    }
+    expect(revert).to.equal(true, "Should revert on stopped contract");
+  });
 });
