@@ -2,3 +2,15 @@ ul.nav{
   border-bottom: 1px #e2e2e294 solid;
   padding-bottom: 10px;
 }
+
+form input, form textarea, form select {
+  width: 100%;
+}
+
+.custom-file-label{
+  margin-top:30px;
+}
+
+.sex span{
+  width:100%;
+}
