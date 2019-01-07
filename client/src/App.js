@@ -3,6 +3,7 @@ import ProfileForm from "./profiles/ProfileForm";
 import ProfileDetails from "./profiles/ProfileDetails";
 import Header from "./profiles/Header";
 import "./App.css";
+import { ThemeProvider } from "rimble-ui";
 import { Route } from "react-router-dom";
 import { withRouter } from "react-router";
 
@@ -31,7 +32,7 @@ class App extends Component {
   render() {
     if (this.state.loading) return "Loading Application...";
     return (
-      <>
+      <ThemeProvider>
         <Header
           drizzle={this.props.drizzle}
           drizzleState={this.state.drizzleState}
@@ -54,7 +55,7 @@ class App extends Component {
             />
           )}
         />
-      </>
+      </ThemeProvider>
     );
   }
 }

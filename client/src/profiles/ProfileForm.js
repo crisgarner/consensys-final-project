@@ -5,14 +5,12 @@ import {
   Row,
   Form,
   FormGroup,
-  Label,
-  Input,
-  Button,
   Modal,
   ModalHeader,
   ModalBody,
   ModalFooter
 } from "reactstrap";
+import { Heading, Field, Input, Textarea, Select, Button } from "rimble-ui";
 import ipfs from "../scripts/ipfs";
 
 class ProfileForm extends Component {
@@ -149,69 +147,75 @@ class ProfileForm extends Component {
           <ModalHeader toggle={this.toggle}>Transaction Confirmed!</ModalHeader>
           <ModalBody>Transaction Hash: {this.state.transactionHash}</ModalBody>
           <ModalFooter>
-            <Button color="danger" onClick={this.toggle}>
+            <Button onClick={this.toggle}>
               Close
             </Button>{" "}
           </ModalFooter>
         </Modal>
-        <Container className="mt-4 ">
+        <Container className="mt-4">
           <Row className="justify-content-center mt-4">
             <Col lg="6 mt-4">
-              <h2>Create Profile</h2>
+              <Heading.h2>Create Profile</Heading.h2>
               <Form className="form" onSubmit={this.onSubmitForm}>
                 <FormGroup>
-                  <Label>Full Name</Label>
-                  <Input
-                    name="name"
-                    value={this.state.name}
-                    onChange={this.onChangeName}
-                  />
+                  <Field label="Full Name">
+                    <Input
+                      name="name"
+                      value={this.state.name}
+                      onChange={this.onChangeName}
+                      fullWidth
+                    />
+                  </Field>
                 </FormGroup>
                 <FormGroup>
-                  <Input
-                    type="file"
-                    className="custom-file-input"
-                    onChange={this.captureFile}
-                    id="customFile"
-                  />
-
-                  <label className="custom-file-label" htmlFor="customFile">
-                    {this.state.fileText}
-                  </label>
+                  <Field label="Profile Picture">
+                    <Input
+                      type="file"
+                      className="custom-file-input"
+                      onChange={this.captureFile}
+                      id="customFile"
+                    />
+                    <label
+                      className="custom-file-label"
+                      htmlFor="customFile"
+                    >
+                      {this.state.fileText}
+                    </label>
+                  </Field>
                 </FormGroup>
                 <FormGroup>
-                  <Label for="sex">Select</Label>
-                  <Input
-                    type="select"
-                    name="select"
-                    id="sex"
-                    value={this.state.sex}
-                    onChange={this.onChangeSex}
-                  >
-                    <option value="Female">Female</option>
-                    <option value="Male">Male</option>
-                  </Input>
+                  <Field label="Sex" className="sex">
+                    <Select
+                      items={["Female", "Male"]}
+                      name="select"
+                      id="sex"
+                      value={this.state.sex}
+                      onChange={this.onChangeSex}
+                    />
+                  </Field>
                 </FormGroup>
                 <FormGroup>
-                  <Label>Age</Label>
-                  <Input
-                    type="number"
-                    name="age"
-                    value={this.state.age}
-                    onChange={this.onChangeAge}
-                  />
+                  <Field label="Age">
+                    <Input
+                      type="number"
+                      name="age"
+                      value={this.state.age}
+                      onChange={this.onChangeAge}
+                    />
+                  </Field>
                 </FormGroup>
                 <FormGroup>
-                  <Label for="exampleText">Bio</Label>
-                  <Input
-                    type="textarea"
-                    name="text"
-                    id="exampleText"
-                    value={this.state.bio}
-                    onChange={this.onChangeBio}
-                  />
+                  <Field label="Bio">
+                    <Textarea
+                      type="textarea"
+                      name="text"
+                      rows={4}
+                      value={this.state.bio}
+                      onChange={this.onChangeBio}
+                    />
+                  </Field>
                 </FormGroup>
-                <Button color="primary">Create Profile</Button>
+                <Button type="submit">Create Profile</Button>
               </Form>
             </Col>
           </Row>

@@ -1,7 +1,8 @@
 import React, { Component } from "react";
-import { Container, Col, Row, Card, CardBody } from "reactstrap";
+import { Container, Col, Row } from "reactstrap";
 import { withRouter } from "react-router";
 import constants from "../constants";
+import { Heading, Card, Text, PublicAddress, Field } from "rimble-ui";
 
 class ProfileForm extends Component {
   constructor(props) {
@@ -38,14 +39,14 @@ class ProfileForm extends Component {
         <Container className="mt-4">
           <Row className="justify-content-center mt-4">
             <Col lg="6 mt-4">
-              <h2>Profile Details</h2>
+              <Heading.h2>Profile Details</Heading.h2>
               <Card>
                 <img
                   src={`${constants.IPFS_URL}/${this.state.imageHash}`}
                   width="90"
-                  className="mt-4 ml-4 rounded"
+                  className="mb-4 rounded"
                 />
-                <CardBody>
+                <Text>
                   <p>
                     <b>Name:</b> {this.state.name}
                   </p>
@@ -59,9 +60,9 @@ class ProfileForm extends Component {
                     <b>Bio:</b> {this.state.bio}
                   </p>
                   <p>
-                    <b>Address:</b> {this.state.address}
+                    <PublicAddress address={this.state.address} />
                   </p>
-                </CardBody>
+                </Text>
               </Card>
             </Col>
           </Row>
