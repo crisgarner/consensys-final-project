@@ -1,24 +1,31 @@
 import React, { Component } from "react";
 import { Container, Col, Row } from "reactstrap";
 import { withRouter } from "react-router";
+import { Link } from "react-router-dom";
 import constants from "../constants";
-import { Heading, Card, Text, PublicAddress, Field } from "rimble-ui";
+import { Heading, Card, Text, PublicAddress, Button } from "rimble-ui";
 
 class ProfileForm extends Component {
   constructor(props) {
     super(props);
+    const { drizzle, drizzleState } = this.props;
     this.state = {
       name: "",
       sex: "",
       age: "",
       bio: "",
-      imageHash: ""
+      imageHash: "",
+      currentAccount: drizzleState.accounts[0],
+      editActive: false
     };
   }
 
   async componentDidMount() {
     const { drizzle } = this.props;
     const { address } = this.props.match.params;
+    if (address == this.state.currentAccount) {
+      this.setState({ editActive: true });
+    }
     const hexToUtf8 = drizzle.web3.utils.hexToUtf8;
     const result = await drizzle.contracts.Profiles.methods
       .addressToProfile(address)
@@ -46,6 +53,13 @@ class ProfileForm extends Component {
                   width="90"
                   className="mb-4 rounded"
                 />
+                {this.state.editActive && (
+                  <Link to={this.props.location.pathname + "/edit"}>
+                    <Button size="small" className="ml-4">
+                      Edit Profile
+                    </Button>
+                  </Link>
+                )}
                 <Text>
                   <p>
                     <b>Name:</b> {this.state.name}
@@ -59,9 +73,7 @@ class ProfileForm extends Component {
                   <p>
                     <b>Bio:</b> {this.state.bio}
                   </p>
-                  <p>
-                    <PublicAddress address={this.state.address} />
-                  </p>
+                  <PublicAddress address={this.props.match.params.address} />
                 </Text>
               </Card>
             </Col>

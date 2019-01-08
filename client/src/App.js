@@ -1,5 +1,6 @@
 import React, { Component } from "react";
 import ProfileForm from "./profiles/ProfileForm";
+import ProfileEditForm from "./profiles/ProfileEditForm";
 import ProfileDetails from "./profiles/ProfileDetails";
 import Header from "./profiles/Header";
 import "./App.css";
@@ -38,6 +39,17 @@ class App extends Component {
           drizzleState={this.state.drizzleState}
         />
         <Route
+          exact
+          path="/profile/:address/edit"
+          render={() => (
+            <ProfileEditForm
+              drizzle={this.props.drizzle}
+              drizzleState={this.state.drizzleState}
+            />
+          )}
+        />
+        <Route
+          exact
           path="/profile/:address"
           render={() => (
             <ProfileDetails
@@ -47,6 +59,7 @@ class App extends Component {
           )}
         />
         <Route
+          exact
           path="/new"
           render={() => (
             <ProfileForm

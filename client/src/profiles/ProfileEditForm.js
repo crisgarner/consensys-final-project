@@ -10,10 +10,20 @@ import {
   ModalBody,
   ModalFooter
 } from "reactstrap";
-import { Heading, Field, Input, Textarea, Select, Button } from "rimble-ui";
+import {
+  Heading,
+  Field,
+  Input,
+  Textarea,
+  Select,
+  Button,
+  PublicAddress
+} from "rimble-ui";
 import ipfs from "../scripts/ipfs";
+import constants from "../constants";
+import { withRouter } from "react-router";
 
-class ProfileForm extends Component {
+class ProfileEditForm extends Component {
   constructor(props) {
     super(props);
     const { drizzle, drizzleState } = this.props;
@@ -89,6 +99,7 @@ class ProfileForm extends Component {
 
   componentDidMount() {
     const { drizzle } = this.props;
+    this.loadData(drizzle);
     // subscribe to changes in the store
     this.unsubscribe = drizzle.store.subscribe(() => {
       // every time the store updates, grab the state from drizzle
@@ -101,15 +112,30 @@ class ProfileForm extends Component {
             drizzleState.transactionStack[this.state.transactionId];
           this.setState({
             transactionHash: transactionHash,
-            modal: true,
-            name: "",
-            sex: "Female",
-            age: "",
-            bio: "",
-            imageHash: ""
+            modal: true
           });
         }
       }
+    });
+  }
+
+  async loadData(drizzle) {
+    const { address } = this.props.match.params;
+    if (address == this.state.currentAccount) {
+      this.setState({ editActive: true });
+    }
+    const hexToUtf8 = drizzle.web3.utils.hexToUtf8;
+    const result = await drizzle.contracts.Profiles.methods
+      .addressToProfile(address)
+      .call();
+    this.setState({
+      name: hexToUtf8(result.name),
+      sex: hexToUtf8(result.sex),
+      age: result.age,
+      bio: result.bio,
+      imageHash: result.imageHash,
+      address: result.owner,
+      fileText: result.imageHash
     });
   }
 
@@ -119,10 +145,9 @@ class ProfileForm extends Component {
 
   async onSubmitForm(event) {
     event.preventDefault();
-    await ipfs.add(this.state.buffer, async (err, ipfsHash) => {
-      this.setState({ imageHash: ipfsHash[0].hash });
+    if (this.state.imageHash == this.state.fileText) {
       const toBytes32 = this.props.drizzle.web3.utils.utf8ToHex;
-      const stackId = await this.props.drizzle.contracts.Profiles.methods.createProfile.cacheSend(
+      const stackId = await this.props.drizzle.contracts.Profiles.methods.updateProfile.cacheSend(
         toBytes32(this.state.name),
         toBytes32(this.state.sex),
         this.state.age,
@@ -131,7 +156,21 @@ class ProfileForm extends Component {
         { from: this.props.drizzleState.account }
       );
       this.setState({ transactionId: stackId });
-    });
+    } else {
+      await ipfs.add(this.state.buffer, async (err, ipfsHash) => {
+        this.setState({ imageHash: ipfsHash[0].hash });
+        const toBytes32 = this.props.drizzle.web3.utils.utf8ToHex;
+        const stackId = await this.props.drizzle.contracts.Profiles.methods.updateProfile.cacheSend(
+          toBytes32(this.state.name),
+          toBytes32(this.state.sex),
+          this.state.age,
+          this.state.bio,
+          this.state.imageHash,
+          { from: this.props.drizzleState.account }
+        );
+        this.setState({ transactionId: stackId });
+      });
+    }
   }
 
   render() {
@@ -152,7 +191,12 @@ class ProfileForm extends Component {
         <Container className="mt-4">
           <Row className="justify-content-center mt-4">
             <Col lg="6 mt-4">
-              <Heading.h2>Create Profile</Heading.h2>
+              <Heading.h2>Update Profile</Heading.h2>
+              <img
+                src={`${constants.IPFS_URL}/${this.state.imageHash}`}
+                width="90"
+                className="mb-4 rounded"
+              />
               <Form className="form" onSubmit={this.onSubmitForm}>
                 <FormGroup>
                   <Field label="Full Name">
@@ -165,7 +209,10 @@ class ProfileForm extends Component {
                   </Field>
                 </FormGroup>
                 <FormGroup>
-                  <Field label="Profile Picture">
+                  <PublicAddress address={this.props.match.params.address} />
+                </FormGroup>
+                <FormGroup>
+                  <Field label="Change Profile Picture">
                     <Input
                       type="file"
                       className="custom-file-input"
@@ -209,7 +256,7 @@ class ProfileForm extends Component {
                     />
                   </Field>
                 </FormGroup>
-                <Button type="submit">Create Profile</Button>
+                <Button type="submit">Update Profile</Button>
               </Form>
             </Col>
           </Row>
@@ -219,4 +266,4 @@ class ProfileForm extends Component {
   }
 }
 
-export default ProfileForm;
+export default withRouter(ProfileEditForm);
