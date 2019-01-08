@@ -9,6 +9,11 @@ contract("Profiles", accounts => {
     this.instance = await Profiles.deployed(accounts[0]);
   });
 
+  it("...should set an owner.", async () => {
+    var owner = await this.instance.owner();
+    owner.should.be.equal(accounts[0]);
+  });
+
   it("...should create an user profile.", async () => {
     var receipt = await this.instance.createProfile(
       web3.utils.utf8ToHex("Cristian Espinoza"),
@@ -137,9 +142,20 @@ contract("Profiles", accounts => {
     );
   });
 
-  it("...should set an owner.", async () => {
-    var owner = await this.instance.owner();
-    owner.should.be.equal(accounts[0]);
+  it("...should return array of addresses.", async () => {
+    var profiles = await this.instance.getProfiles();
+    profiles.length.should.be.equal(1);
+    await this.instance.createProfile(
+      web3.utils.utf8ToHex("Lucy Aguilar"),
+      web3.utils.utf8ToHex("Female"),
+      40,
+      "Lorem Ipsum Bio.",
+      "QmVtYjNij3KeyGmcgg7yVXWskLaBtov3UYL9pgcGK3MCWu",
+      { from: accounts[6] }
+    );
+    profiles = await this.instance.getProfiles();
+    profiles.length.should.be.equal(2);
+    profiles[1].should.be.equal(accounts[6]);
   });
 
   it("...should toogle circuit breaker.", async () => {

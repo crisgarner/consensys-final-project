@@ -2,6 +2,7 @@ import React, { Component } from "react";
 import ProfileForm from "./profiles/ProfileForm";
 import ProfileEditForm from "./profiles/ProfileEditForm";
 import ProfileDetails from "./profiles/ProfileDetails";
+import ProfileList from "./profiles/ProfileList";
 import Header from "./profiles/Header";
 import "./App.css";
 import { ThemeProvider } from "rimble-ui";
@@ -37,6 +38,16 @@ class App extends Component {
         <Header
           drizzle={this.props.drizzle}
           drizzleState={this.state.drizzleState}
+        />
+        <Route
+          exact
+          path="/"
+          render={() => (
+            <ProfileList
+              drizzle={this.props.drizzle}
+              drizzleState={this.state.drizzleState}
+            />
+          )}
         />
         <Route
           exact
