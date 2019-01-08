@@ -47,7 +47,7 @@ contract Profiles {
     bool private stopped = false; 
     address public owner; 
     mapping(address => Profile) public addressToProfile; 
-    address[] profilesArray;
+    address[] public profilesArray;
 
     /** @notice Constructor sets the as the owner the deployer of the contract.
       */
@@ -83,6 +83,13 @@ contract Profiles {
     function getCurrentProfilesSize() public view returns(uint){
         return profilesArray.length;
     }
+
+    /** @notice Gets the array of profiles addresses.
+      * @return address[] the array of profile addresses.
+      */
+    function getProfiles() public view returns (address[] memory) {
+       return profilesArray;
+   }
 
     /** @notice Creates a profile with user basic information.
       * @dev emits a log with all the information added and can be disable with circuit breaker.

@@ -106,7 +106,8 @@ class ProfileForm extends Component {
             sex: "Female",
             age: "",
             bio: "",
-            imageHash: ""
+            imageHash: "",
+            fileText: "Select Profile Image"
           });
         }
       }
