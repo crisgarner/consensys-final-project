@@ -6890,10 +6890,16 @@
       "links": {},
       "address": "0x220baCb7442065DDaAE345d0F31F15b7FfCE10af",
       "transactionHash": "0x98b169fed66afc8775d0ed7386e9513323369e33f5d84f799b890d6fd810fc11"
+    },
+    "1547062823208": {
+      "events": {},
+      "links": {},
+      "address": "0x4560b417242AB946df9769A00cd9747600A8E05b",
+      "transactionHash": "0xe3a3f51c29275edf321282af6b7aeecf08dd8a054607a48c3bddecdc6c265856"
     }
   },
   "schemaVersion": "3.0.0",
-  "updatedAt": "2019-01-08T21:58:49.246Z",
+  "updatedAt": "2019-01-09T19:40:43.165Z",
   "devdoc": {
     "author": "Cristian Espinoza Garner - @crisgarner.",
     "methods": {
