@@ -44,7 +44,7 @@ contract Profiles {
 
     /** @dev State variables. 
       */
-    bool private stopped = false; 
+    bool public stopped = false; 
     address public owner; 
     mapping(address => Profile) public addressToProfile; 
     address[] public profilesArray;

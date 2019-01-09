@@ -8,6 +8,7 @@ import "./App.css";
 import { ThemeProvider } from "rimble-ui";
 import { Route } from "react-router-dom";
 import { withRouter } from "react-router";
+import AdminSettings from "./admin/AdminSettings";
 
 class App extends Component {
   state = { loading: true, drizzleState: null };
@@ -44,6 +45,16 @@ class App extends Component {
           path="/"
           render={() => (
             <ProfileList
+              drizzle={this.props.drizzle}
+              drizzleState={this.state.drizzleState}
+            />
+          )}
+        />
+        <Route
+          exact
+          path="/admin"
+          render={() => (
+            <AdminSettings
               drizzle={this.props.drizzle}
               drizzleState={this.state.drizzleState}
             />
