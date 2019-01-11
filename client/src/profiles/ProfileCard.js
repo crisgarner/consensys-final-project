@@ -1,9 +1,8 @@
 import React, { Component } from "react";
-import { Container, Col, Row } from "reactstrap";
 import { withRouter } from "react-router";
 import { Link } from "react-router-dom";
 import constants from "../constants";
-import { Heading, Card, Text, PublicAddress, Button } from "rimble-ui";
+import { Card, Text, PublicAddress, Button } from "rimble-ui";
 
 class ProfileCard extends Component {
   constructor(props) {
