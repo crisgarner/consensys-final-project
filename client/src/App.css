@@ -19,3 +19,7 @@ form input, form textarea, form select {
   max-height: 100px;
   overflow: hidden;
 }
+
+.nav-item svg {
+  margin-top: -4px;
+}
