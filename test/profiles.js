@@ -158,7 +158,7 @@ contract("Profiles", accounts => {
     profiles[1].should.be.equal(accounts[6]);
   });
 
-  it("Allows to send a donation", async () => {
+  it("...should allow to receive a donation", async () => {
     const amount = web3.utils.toWei("1", "ether");
     const receipt = await this.instance.giveDonation(accounts[1], {
       from: accounts[0],
