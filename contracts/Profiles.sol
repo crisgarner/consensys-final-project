@@ -3,7 +3,13 @@ pragma solidity ^0.5.0;
 /** @title Profiles.
     @author Cristian Espinoza Garner - @crisgarner.
  */
+import 'openzeppelin-solidity/contracts/math/SafeMath.sol';
+ 
 contract Profiles {
+
+     /** @notice Using Open Zeppeling Safe Math.
+      */
+    using SafeMath for uint256;
 
     /** @notice Logs when a profile is created.
       */
@@ -27,6 +33,14 @@ contract Profiles {
         string _imageHash
     );
 
+    /** @notice Logs when a tip is given.
+      */
+     event LogGiveDonation(
+        address _receiver,
+        address _sender, 
+        uint _amount
+    );
+
     /** @notice Logs when contract is paused or resumed.
       */
     event LogToogleContractActive(
@@ -48,6 +62,7 @@ contract Profiles {
     address public owner; 
     mapping(address => Profile) public addressToProfile; 
     address[] public profilesArray;
+    mapping(address => uint) public balances;
 
     /** @notice Constructor sets the as the owner the deployer of the contract.
       */
@@ -132,6 +147,23 @@ contract Profiles {
         Profile memory profile = Profile(msg.sender, _name, _sex, _age, _bio, _imageHash);
         addressToProfile[msg.sender] = profile;
         emit LogUpdateProfile(msg.sender,_name,_sex,_age,_bio, _imageHash);
+    }
+
+    /** @notice Gives a donation to a user.
+      * @dev emits a log with all the information added and can be disable with circuit breaker.
+      * @param _receiver name of the donation receiver.
+      */
+    function giveDonation(address payable _receiver)
+	public
+    stopInEmergency
+	payable
+	returns(bool success)
+    {
+        require(msg.value > 0);
+        require(_receiver != address(0), 'address must exist');
+        balances[_receiver] = balances[_receiver].add(msg.value);
+        emit LogGiveDonation(_receiver,msg.sender, msg.value);
+	    return true;
     }
 
 }
