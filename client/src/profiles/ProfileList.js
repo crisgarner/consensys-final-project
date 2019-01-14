@@ -32,9 +32,8 @@ class ProfileList extends Component {
               <Row className="justify-content-center mt-4">
                 {this.state.profiles.map(function(address, index) {
                   return (
-                    <Col lg="4 mt-4">
+                    <Col lg="4 mt-4" key={index}>
                       <ProfileCard
-                        key={index}
                         drizzle={drizzle}
                         address={address}
                         drizzleState={drizzleState}
