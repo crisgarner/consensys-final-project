@@ -33,11 +33,18 @@ contract Profiles {
         string _imageHash
     );
 
-    /** @notice Logs when a tip is given.
+    /** @notice Logs when a donation is given.
       */
      event LogGiveDonation(
         address _receiver,
         address _sender, 
+        uint _amount
+    );
+
+    /** @notice Logs when a donation is withdrawn.
+      */
+     event LogWithdrawDonation(
+        address _owner,
         uint _amount
     );
 
@@ -166,4 +173,19 @@ contract Profiles {
 	    return true;
     }
 
+    /** @notice Withdraw the donatios of the user.
+      * @dev emits a log with all the information of the withdraw and can be disable with circuit breaker.
+      * @param _amount value that represents how much to withdraw.
+      * @return true if everything was sucessfull.
+      */
+    function withdrawDonation(uint _amount)
+	public
+	returns(bool success)
+    {
+        require(balances[msg.sender] >= _amount, 'Amount should be less than balance');
+        balances[msg.sender] = balances[msg.sender].sub(_amount);
+        msg.sender.transfer(_amount);
+        emit LogWithdrawDonation(msg.sender, _amount);
+        return true;
+    }
 }

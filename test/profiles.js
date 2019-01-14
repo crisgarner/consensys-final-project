@@ -190,10 +190,10 @@ contract("Profiles", accounts => {
       assert(true, "address must be valid");
     } catch (err) {}
   });
-  /*
+
   it("Allows to withdraw a donation", async () => {
     var oldBalance = await web3.eth.getBalance(accounts[1]);
-    const amount = web3.utils.toWei("1", "ether");
+    var amount = web3.utils.toWei("1", "ether");
     const receipt = await this.instance.withdrawDonation(amount, {
       from: accounts[1]
     });
@@ -202,7 +202,7 @@ contract("Profiles", accounts => {
       "LogWithdrawDonation",
       "should be the LogWithdrawDonation event"
     );
-    receipt.logs[0].args._withdrawer.should.equal(
+    receipt.logs[0].args._owner.should.equal(
       accounts[1],
       "should equal to withdrawer account"
     );
@@ -219,7 +219,18 @@ contract("Profiles", accounts => {
       });
       assert(true, "address must be valid");
     } catch (err) {}
-  });*/
+    var revert = false;
+    try {
+      amount = web3.utils.toWei("3", "ether");
+      await this.instance.withdrawDonation(amount, {
+        from: accounts[1]
+      });
+    } catch (err) {
+      revert = true;
+      assert(err.reason === "Amount should be less than balance");
+    }
+    expect(revert).to.equal(true, "Should revert on high amount");
+  });
 
   it("...should toogle circuit breaker.", async () => {
     var receipt = await this.instance.toggleContractActive({
