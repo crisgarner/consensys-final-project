@@ -158,6 +158,80 @@ contract("Profiles", accounts => {
     profiles[1].should.be.equal(accounts[6]);
   });
 
+  it("...should allow to receive a donation", async () => {
+    const amount = web3.utils.toWei("1", "ether");
+    const receipt = await this.instance.giveDonation(accounts[1], {
+      from: accounts[0],
+      value: amount
+    });
+    receipt.logs.length.should.equal(1, "trigger one event");
+    receipt.logs[0].event.should.equal(
+      "LogGiveDonation",
+      "should be the LogGiveDonation event"
+    );
+    receipt.logs[0].args._receiver.should.equal(
+      accounts[1],
+      "should equal to receiver account"
+    );
+    receipt.logs[0].args._sender.should.equal(
+      accounts[0],
+      "should equal to sender account"
+    );
+    receipt.logs[0].args._amount
+      .toString()
+      .should.equal(amount, "should equal to amount sent");
+    var balance = await this.instance.balances(accounts[1]);
+    balance.toString().should.be.equal(amount);
+    try {
+      await this.instance.giveDonation(0x0, {
+        from: accounts[0],
+        value: amount
+      });
+      assert(true, "address must be valid");
+    } catch (err) {}
+  });
+
+  it("Allows to withdraw a donation", async () => {
+    var oldBalance = await web3.eth.getBalance(accounts[1]);
+    var amount = web3.utils.toWei("1", "ether");
+    const receipt = await this.instance.withdrawDonation(amount, {
+      from: accounts[1]
+    });
+    receipt.logs.length.should.equal(1, "trigger one event");
+    receipt.logs[0].event.should.equal(
+      "LogWithdrawDonation",
+      "should be the LogWithdrawDonation event"
+    );
+    receipt.logs[0].args._owner.should.equal(
+      accounts[1],
+      "should equal to withdrawer account"
+    );
+    receipt.logs[0].args._amount
+      .toString()
+      .should.equal(amount, "should equal to amount sent");
+    var newBalance = await web3.eth.getBalance(accounts[1]);
+    oldBalance = web3.utils.fromWei(oldBalance, "ether") * 1;
+    newBalance = web3.utils.fromWei(newBalance, "ether") * 1;
+    newBalance.should.be.above(oldBalance);
+    try {
+      await this.instance.withdrawDonation(0x0, {
+        from: accounts[1]
+      });
+      assert(true, "address must be valid");
+    } catch (err) {}
+    var revert = false;
+    try {
+      amount = web3.utils.toWei("3", "ether");
+      await this.instance.withdrawDonation(amount, {
+        from: accounts[1]
+      });
+    } catch (err) {
+      revert = true;
+      assert(err.reason === "Amount should be less than balance");
+    }
+    expect(revert).to.equal(true, "Should revert on high amount");
+  });
+
   it("...should toogle circuit breaker.", async () => {
     var receipt = await this.instance.toggleContractActive({
       from: accounts[0]
