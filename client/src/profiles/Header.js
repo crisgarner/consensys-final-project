@@ -8,19 +8,31 @@ class Header extends Component {
     super(props);
     const { drizzle, drizzleState } = this.props;
     this.state = {
-      account: drizzleState.accounts[0]
+      account: drizzleState.accounts[0],
+      hasBalance: false,
+      balance: 0
     };
   }
 
   componentDidMount() {
     const { drizzle } = this.props;
     this.checkOwner(drizzle);
+    this.hasBalance(drizzle);
   }
 
   async checkOwner(drizzle) {
     const owner = await drizzle.contracts.Profiles.methods.owner().call();
     var isOwner = owner == this.state.account ? true : false;
     this.setState({ isOwner });
+  }
+
+  async hasBalance(drizzle) {
+    var balance = await drizzle.contracts.Profiles.methods
+      .balances(this.state.account)
+      .call();
+    balance = drizzle.web3.utils.fromWei(balance.toString(), "ether");
+    var hasBalance = balance > 0 ? true : false;
+    this.setState({ hasBalance, balance });
   }
 
   render() {
@@ -36,6 +48,13 @@ class Header extends Component {
           <Link href="/new">
             <Icon name="PersonAdd" size="20" className="mr-1" />
             New Profile
+          </Link>
+        </NavItem>
+
+        <NavItem className="ml-2 mr-4 mt-4 pt-1 text-left ">
+          <Link href="/withdraw">
+            <Icon name="AccountBalanceWallet" size="20" className="mr-1" />
+            Account Balance
           </Link>
         </NavItem>
 
