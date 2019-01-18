@@ -9,12 +9,12 @@ import { ThemeProvider } from "rimble-ui";
 import { Route } from "react-router-dom";
 import { withRouter } from "react-router";
 import AdminSettings from "./admin/AdminSettings";
+import Withdraw from "./profiles/Withdraw";
 
 class App extends Component {
   state = { loading: true, drizzleState: null };
 
   componentDidMount() {
-    console.log(this.props);
     const { drizzle } = this.props;
     // subscribe to changes in the store
     this.unsubscribe = drizzle.store.subscribe(() => {
@@ -55,6 +55,16 @@ class App extends Component {
           path="/admin"
           render={() => (
             <AdminSettings
+              drizzle={this.props.drizzle}
+              drizzleState={this.state.drizzleState}
+            />
+          )}
+        />
+        <Route
+          exact
+          path="/withdraw"
+          render={() => (
+            <Withdraw
               drizzle={this.props.drizzle}
               drizzleState={this.state.drizzleState}
             />
