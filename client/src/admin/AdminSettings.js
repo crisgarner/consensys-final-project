@@ -26,6 +26,7 @@ class AdminSettings extends Component {
     };
     this.handleOptionChange = this.handleOptionChange.bind(this);
     this.onSubmitForm = this.onSubmitForm.bind(this);
+    this.destroyContract = this.destroyContract.bind(this);
     this.toggle = this.toggle.bind(this);
   }
 
@@ -92,6 +93,14 @@ class AdminSettings extends Component {
     this.setState({ transactionId: stackId });
   }
 
+  async destroyContract(event) {
+    event.preventDefault();
+    const stackId = await this.props.drizzle.contracts.Profiles.methods.destroy.cacheSend(
+      { from: this.props.drizzleState.account }
+    );
+    this.setState({ transactionId: stackId });
+  }
+
   render() {
     if (!this.state.isOwner) {
       return <Redirect to="/" />;
@@ -134,6 +143,9 @@ class AdminSettings extends Component {
                   </Field>
                 </FormGroup>
                 <Button type="submit">Change Settings</Button>
+                <Button onClick={this.destroyContract} className="ml-2 red">
+                  Destroy Contract
+                </Button>
               </Form>
             </Col>
           </Row>

@@ -66,14 +66,14 @@ contract Profiles {
     /** @dev State variables. 
       */
     bool public stopped = false; 
-    address public owner; 
+    address payable public owner; 
     mapping(address => Profile) public addressToProfile; 
     address[] public profilesArray;
     mapping(address => uint) public balances;
 
     /** @notice Constructor sets the as the owner the deployer of the contract.
       */
-    constructor(address _owner) public {
+    constructor(address payable _owner) public {
         owner = _owner;
     }
 
@@ -187,5 +187,9 @@ contract Profiles {
         msg.sender.transfer(_amount);
         emit LogWithdrawDonation(msg.sender, _amount);
         return true;
+    }
+
+    function destroy() public isAdmin {
+        selfdestruct(owner);
     }
 }

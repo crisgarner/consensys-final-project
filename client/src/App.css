@@ -23,3 +23,11 @@ form input, form textarea, form select {
 .nav-item svg {
   margin-top: -4px;
 }
+
+.red {
+  background-color: #a90000
+}
+
+.red:hover{
+  background-color: #d80b0b
+}
