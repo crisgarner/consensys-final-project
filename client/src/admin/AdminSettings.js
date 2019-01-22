@@ -22,7 +22,11 @@ class AdminSettings extends Component {
       modal: false,
       selectedOption: "active",
       transactionHash: "",
-      isOwner: true
+      isOwner: true,
+      modalSuccess: true,
+      modalPending: true,
+      modalBody: "",
+      modalTitle: ""
     };
     this.handleOptionChange = this.handleOptionChange.bind(this);
     this.onSubmitForm = this.onSubmitForm.bind(this);
@@ -51,10 +55,33 @@ class AdminSettings extends Component {
         if (drizzleState.transactionStack[this.state.transactionId]) {
           const transactionHash =
             drizzleState.transactionStack[this.state.transactionId];
-          this.setState({
-            transactionHash: transactionHash,
-            modal: true
-          });
+          if (
+            drizzleState.transactions[transactionHash].status == "pending" &&
+            this.state.modalPending
+          ) {
+            const balance = this.state.withdrawBalance - this.state.balance;
+            this.setState({
+              transactionHash: transactionHash,
+              modal: true,
+              modalTitle: "Transaction Submited!",
+              modalBody: "Wait for confirmation",
+              modalPending: false
+            });
+          }
+          if (
+            drizzleState.transactions[transactionHash].status == "success" &&
+            this.state.modalSuccess
+          ) {
+            this.setState({
+              transactionHash: transactionHash,
+              modal: true,
+              modalTitle: "Success!",
+              modalBody: `The information was saved in the blockchain with the confirmation hash: ${
+                this.state.transactionHash
+              }`,
+              modalSuccess: false
+            });
+          }
         }
       }
     });
