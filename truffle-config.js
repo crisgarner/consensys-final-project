@@ -16,7 +16,8 @@ module.exports = {
     },
     rinkeby: {
       // must be a thunk, otherwise truffle commands may hang in CI
-      provider: () => new HDWalletProvider(mnemonic, process.env.RINKEBY_API_URL),
+      provider: () =>
+        new HDWalletProvider(mnemonic, process.env.RINKEBY_API_URL),
       network_id: "4"
     }
   }
