@@ -23,7 +23,11 @@ class Withdraw extends Component {
       transactionHash: "",
       hasBalance: false,
       balance: 0,
-      withdrawBalance: ""
+      withdrawBalance: "",
+      modalSuccess: true,
+      modalPending: true,
+      modalBody: "",
+      modalTitle: ""
     };
     this.onSubmitForm = this.onSubmitForm.bind(this);
     this.onChangeWithdrawBalance = this.onChangeWithdrawBalance.bind(this);
@@ -50,13 +54,35 @@ class Withdraw extends Component {
         if (drizzleState.transactionStack[this.state.transactionId]) {
           const transactionHash =
             drizzleState.transactionStack[this.state.transactionId];
-          const balance = this.state.withdrawBalance - this.state.balance;
-          this.setState({
-            transactionHash: transactionHash,
-            modal: true,
-            withdrawBalance: "",
-            balance: balance
-          });
+          if (
+            drizzleState.transactions[transactionHash].status == "pending" &&
+            this.state.modalPending
+          ) {
+            const balance = this.state.withdrawBalance - this.state.balance;
+            this.setState({
+              transactionHash: transactionHash,
+              modal: true,
+              modalTitle: "Transaction Submited!",
+              modalBody: "Wait for confirmation",
+              modalPending: false,
+              withdrawBalance: "",
+              balance: balance
+            });
+          }
+          if (
+            drizzleState.transactions[transactionHash].status == "success" &&
+            this.state.modalSuccess
+          ) {
+            this.setState({
+              transactionHash: transactionHash,
+              modal: true,
+              modalTitle: "Success!",
+              modalBody: `The information was saved in the blockchain with the confirmation hash: ${
+                this.state.transactionHash
+              }`,
+              modalSuccess: false
+            });
+          }
         }
       }
     });
@@ -99,11 +125,13 @@ class Withdraw extends Component {
         <Modal
           isOpen={this.state.modal}
           toggle={this.toggle}
-          className={this.props.className}
           size="lg"
+          className={this.props.className}
         >
-          <ModalHeader toggle={this.toggle}>Transaction Confirmed!</ModalHeader>
-          <ModalBody>Transaction Hash: {this.state.transactionHash}</ModalBody>
+          <ModalHeader toggle={this.toggle}>
+            {this.state.modalTitle}
+          </ModalHeader>
+          <ModalBody>{this.state.modalBody}</ModalBody>
           <ModalFooter>
             <Button onClick={this.toggle}>Close</Button>
           </ModalFooter>

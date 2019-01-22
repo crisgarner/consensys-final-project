@@ -298,4 +298,39 @@ contract("Profiles", accounts => {
     }
     expect(revert).to.equal(true, "Should revert on stopped contract");
   });
+
+  it("...should selfdestruct only by owner.", async () => {
+    revert = false;
+    try {
+      await this.instance.destroy({ from: accounts[1] });
+    } catch (err) {
+      revert = true;
+      assert(err.reason === "Only owner");
+    }
+    expect(revert).to.equal(true, "Should revert on not owner");
+    const code = await web3.eth.getCode(this.instance.address);
+    code.should.not.equal("0x");
+  });
+
+  it("...should send floating contract balance to owner.", async () => {
+    await this.instance.toggleContractActive({
+      from: accounts[0]
+    });
+    const amount = web3.utils.toWei("1", "ether");
+    await this.instance.giveDonation(accounts[1], {
+      from: accounts[9],
+      value: amount
+    });
+    var oldBalance = await web3.eth.getBalance(accounts[0]);
+    await this.instance.destroy({ from: accounts[0] });
+    var newBalance = await web3.eth.getBalance(accounts[0]);
+    oldBalance = web3.utils.fromWei(oldBalance, "ether") * 1;
+    newBalance = web3.utils.fromWei(newBalance, "ether") * 1;
+    newBalance.should.be.above(oldBalance);
+  });
+
+  it("...should delete the contract.", async () => {
+    const code = await web3.eth.getCode(this.instance.address);
+    code.should.equal("0x");
+  });
 });

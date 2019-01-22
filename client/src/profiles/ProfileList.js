@@ -1,8 +1,8 @@
 import React, { Component } from "react";
 import { Container, Col, Row } from "reactstrap";
 import { withRouter } from "react-router";
-import { Heading } from "rimble-ui";
 import ProfileCard from "./ProfileCard";
+import { Link, Icon, Heading } from "rimble-ui";
 
 class ProfileList extends Component {
   constructor(props) {
@@ -10,7 +10,8 @@ class ProfileList extends Component {
     const { drizzle, drizzleState } = this.props;
     this.state = {
       profiles: [],
-      currentAccount: drizzleState.accounts[0]
+      currentAccount: drizzleState.accounts[0],
+      initialized: false
     };
   }
 
@@ -19,7 +20,8 @@ class ProfileList extends Component {
     const profiles = await drizzle.contracts.Profiles.methods
       .getProfiles()
       .call();
-    this.setState({ profiles });
+    const initialized = true;
+    this.setState({ profiles, initialized });
   }
   render() {
     const { drizzle, drizzleState } = this.props;
@@ -30,6 +32,14 @@ class ProfileList extends Component {
             <Col lg="12 mt-4">
               <Heading.h2>Profiles List</Heading.h2>
               <Row className="justify-content-center mt-4">
+                {this.state.profiles.length == 0 && this.state.initialized && (
+                  <Link href="/new">
+                    <Heading.h3>
+                      <Icon name="Portrait" size="100" className="mr-1" />
+                      There are no profiles created yet, create one!
+                    </Heading.h3>
+                  </Link>
+                )}
                 {this.state.profiles.map(function(address, index) {
                   return (
                     <Col lg="4 mt-4" key={index}>

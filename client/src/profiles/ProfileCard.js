@@ -29,7 +29,11 @@ class ProfileCard extends Component {
       currentAccount: drizzleState.accounts[0],
       modal: false,
       transactionHash: "",
-      editActive: false
+      editActive: false,
+      modalSuccess: true,
+      modalPending: true,
+      modalBody: "",
+      modalTitle: ""
     };
     this.onChangeAmount = this.onChangeAmount.bind(this);
     this.onSubmitForm = this.onSubmitForm.bind(this);
@@ -89,11 +93,39 @@ class ProfileCard extends Component {
         if (drizzleState.transactionStack[this.state.transactionId]) {
           const transactionHash =
             drizzleState.transactionStack[this.state.transactionId];
-          this.setState({
-            transactionHash: transactionHash,
-            modal: true,
-            amount: 0
-          });
+          if (
+            drizzleState.transactions[transactionHash].status == "pending" &&
+            this.state.modalPending
+          ) {
+            this.setState({
+              transactionHash: transactionHash,
+              modal: true,
+              modalTitle: "Transaction Submited!",
+              modalBody: "Wait for confirmation",
+              modalPending: false,
+              name: "",
+              sex: "Female",
+              age: "",
+              bio: "",
+              imageHash: "",
+              fileText: "Select Profile Image",
+              amount: ""
+            });
+          }
+          if (
+            drizzleState.transactions[transactionHash].status == "success" &&
+            this.state.modalSuccess
+          ) {
+            this.setState({
+              transactionHash: transactionHash,
+              modal: true,
+              modalTitle: "Success!",
+              modalBody: `The information was saved in the blockchain with the confirmation hash: ${
+                this.state.transactionHash
+              }`,
+              modalSuccess: false
+            });
+          }
         }
       }
     });
@@ -105,13 +137,15 @@ class ProfileCard extends Component {
         <Modal
           isOpen={this.state.modal}
           toggle={this.toggle}
-          className={this.props.className}
           size="lg"
+          className={this.props.className}
         >
-          <ModalHeader toggle={this.toggle}>Transaction Confirmed!</ModalHeader>
-          <ModalBody>Transaction Hash: {this.state.transactionHash}</ModalBody>
+          <ModalHeader toggle={this.toggle}>
+            {this.state.modalTitle}
+          </ModalHeader>
+          <ModalBody>{this.state.modalBody}</ModalBody>
           <ModalFooter>
-            <Button onClick={this.toggle}>Close</Button>{" "}
+            <Button onClick={this.toggle}>Close</Button>
           </ModalFooter>
         </Modal>
         <Card className="profile-card">
