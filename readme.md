@@ -1,6 +1,6 @@
 # Description
 
-This app allows people to create a profile with some basic information and a small bio in order to receive donations. They get an unique link with their address and can share it to other users or just get listed with all the other profiles.
+This app allows people to create a profile with some basic information and a small bio in order to receive donations. They get an unique link with their address and can share it to other users or just get listed with all the other profiles. The project uses IPFS in order to save the profile image.
 
 A user can see the profile and make a donation throught the smartcontract.
 
