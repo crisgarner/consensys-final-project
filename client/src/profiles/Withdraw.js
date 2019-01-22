@@ -125,11 +125,13 @@ class Withdraw extends Component {
         <Modal
           isOpen={this.state.modal}
           toggle={this.toggle}
-          className={this.props.className}
           size="lg"
+          className={this.props.className}
         >
-          <ModalHeader toggle={this.toggle}>Transaction Confirmed!</ModalHeader>
-          <ModalBody>Transaction Hash: {this.state.transactionHash}</ModalBody>
+          <ModalHeader toggle={this.toggle}>
+            {this.state.modalTitle}
+          </ModalHeader>
+          <ModalBody>{this.state.modalBody}</ModalBody>
           <ModalFooter>
             <Button onClick={this.toggle}>Close</Button>
           </ModalFooter>
