@@ -16,6 +16,8 @@ You need truffle, ganache, truffle-hdwallet-provider, openzeppelin-solidity, dot
 npm install -g truffle
 npm install -g ganache-cli
 npm install
+cd client
+npm install
 ```
 
 ### Installing and Testing
